@@ -10,14 +10,15 @@ class UserCreateSerializer(ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        asd = validated_data
-        # if len(validated_data['password']) < 8:
-        #     return 'Password is too short'
-        # if validated_data['password'] != validated_data['password_repeat']:
-        #     return 'Password mismatch'
         user = super().create(validated_data)
 
         user.set_password(user.password)
         user.save()
 
         return user
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
