@@ -47,7 +47,4 @@ services:
     image: sermalenk/skypro-front:lesson-34
     ports:
       - "80:80"
-    depends_on:
-      api:
-        condition: service_completed_successfully
     restart: always
