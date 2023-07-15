@@ -40,8 +40,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - .:/docker-entrypoint-initdb.d
+#    volumes:
+#      - .:/docker-entrypoint-initdb.d
 
   front:
     image: sermalenk/skypro-front:lesson-34
