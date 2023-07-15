@@ -13,8 +13,8 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
-    volumes:
-      - .:/app/todolist-api
+#    volumes:
+#      - .:/app/todolist-api
     restart: always
 
   migrations:
