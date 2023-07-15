@@ -5,7 +5,7 @@ services:
   api:
     build:
       context: ./
-    env_file: ./deploy/.env
+    env_file: .env
     environment:
       DB_HOST: postgres
     depends_on:
@@ -14,12 +14,12 @@ services:
       migrations:
         condition: service_completed_successfully
     volumes:
-      - ./todolist/settings.py:/app/todolist-api/todolist/settings.py
+      - .:/app/todolist-api
     restart: always
 
   migrations:
     build: .
-    env_file: ./deploy/.env
+    env_file: .env
     environment:
       DB_HOST: postgres
     depends_on:
