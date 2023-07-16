@@ -31,9 +31,9 @@ services:
     image: postgres:latest
     env_file: .env
     environment:
-      POSTGRES_USER: ${ env.DB_USER }
-      POSTGRES_PASSWORD: ${ env.DB_PASSWORD }
-      POSTGRES_DB: ${ env.DB_NAME }
+      POSTGRES_USER: ${env.DB_USER}
+      POSTGRES_PASSWORD: ${env.DB_PASSWORD}
+      POSTGRES_DB: ${env.DB_NAME}
     ports:
       - '5432:5432'
     healthcheck:
