@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "deploy/docker-compose.yaml"
+          source: "docker-compose.yaml"
           target: "deploy"
           strip_components: 1
       - name: copy env
@@ -44,7 +44,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "deploy/.env"
+          source: ".env"
           target: "deploy"
           strip_components: 1
       - name: run
