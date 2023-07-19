@@ -6,7 +6,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from core.models import User
 from core.permissions import IsOwner, IsStaff
-from core.serializers import UserSerializer, UserListSerializer, UserCreateUpdateSerializer, UserLoginSerializer
+from core.serializers import UserSerializer, UserListSerializer, UserLoginSerializer, \
+    UserCreateSerializer, UserUpdateSerializer
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404, RetrieveAPIView, UpdateAPIView, \
     DestroyAPIView
@@ -17,14 +18,7 @@ from rest_framework.viewsets import ModelViewSet
 
 class UserCreateView(CreateAPIView):
     model = User
-    serializer_class = UserCreateUpdateSerializer
-
-    def post(self, request, *args, **kwargs):
-        if len(request.data['password']) < 8:
-            return 'Password is too short'
-        if request.data['password'] != request.data['password_repeat']:
-            return 'Password mismatch'
-        return self.create(request, *args, **kwargs)
+    serializer_class = UserCreateSerializer
 
 
 class UserDetailView(RetrieveAPIView):
@@ -34,7 +28,7 @@ class UserDetailView(RetrieveAPIView):
 
 class UserUpdateView(UpdateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserCreateUpdateSerializer
+    serializer_class = UserUpdateSerializer
 
 
 class UserDeleteView(DestroyAPIView):

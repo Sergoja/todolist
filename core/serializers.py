@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from core.models import User
@@ -8,13 +10,32 @@ from rest_framework.serializers import ModelSerializer
 from django.contrib.auth.password_validation import validate_password
 
 
-class UserCreateUpdateSerializer(ModelSerializer):
-    # old_password = serializers.CharField(max_length=128, required=False)
-    # new_password = serializers.CharField(max_length=128, required=False)
+class UserCreateSerializer(ModelSerializer):
+    password_repeat = serializers.CharField(max_length=128, required=True)
+
+    def save(self, *args, **kwargs):
+        user = User(username=self.validated_data['username'])
+
+        password = self.validated_data['password']
+        password_repeat = self.validated_data['password_repeat']
+
+        validate_password(password)
+
+        if password != password_repeat:
+
+            raise serializers.ValidationError({password: "Пароль не совпадает"})
+
+        user.set_password(password)
+        user.save()
+
+        return user
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email"]
+        fields = ["username", "password", "password_repeat"]
+
+
+class UserUpdateSerializer(ModelSerializer):
 
     # def edit_password(self, request):
     #     if request.method == 'PATCH':
@@ -27,16 +48,11 @@ class UserCreateUpdateSerializer(ModelSerializer):
     #         else:
     #             return Response("New password is None", status=status.HTTP_404_NOT_FOUND)
 
-    def create(self, validated_data):
-        user = super().create(validated_data)
-
-        user.set_password(user.password)
-        user.save()
-
-        return user
+    class Meta:
+        model = User
+        fields = '__all__'
 
 
-@csrf_exempt
 class UserLoginSerializer(ModelSerializer):
     def login_user(self, request):
         if request.method == "POST":
@@ -52,7 +68,6 @@ class UserLoginSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
-
 
 
 class UserListSerializer(ModelSerializer):
