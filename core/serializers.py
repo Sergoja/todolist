@@ -13,23 +13,6 @@ from django.contrib.auth.password_validation import validate_password
 class UserCreateSerializer(ModelSerializer):
     password_repeat = serializers.CharField(max_length=128, required=True)
 
-    def save(self, *args, **kwargs):
-        user = User(username=self.validated_data['username'])
-
-        password = self.validated_data['password']
-        password_repeat = self.validated_data['password_repeat']
-
-        validate_password(password)
-
-        if password != password_repeat:
-
-            raise serializers.ValidationError({password: "Пароль не совпадает"})
-
-        user.set_password(password)
-        user.save()
-
-        return user
-
     class Meta:
         model = User
         fields = ["username", "password", "password_repeat"]
@@ -53,17 +36,9 @@ class UserUpdateSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class UserLoginSerializer(ModelSerializer):
-    def login_user(self, request):
-        if request.method == "POST":
-            username = request.POST['username'],
-            password = request.body['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
-            else:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
