@@ -18,25 +18,14 @@ class UserCreateSerializer(ModelSerializer):
         fields = ["username", "password", "password_repeat"]
 
 
-class UserUpdateSerializer(ModelSerializer):
-
-    # def edit_password(self, request):
-    #     if request.method == 'PATCH':
-    #         if request.data['old_password'] != request.data['password']:
-    #             return Response("Not correct password", status=status.HTTP_404_NOT_FOUND)
-    #         user = request.user
-    #         if request.data['new_password'] is not None:
-    #             user.set_password(request.data['new_password'])
-    #             user.save()
-    #         else:
-    #             return Response("New password is None", status=status.HTTP_404_NOT_FOUND)
+class UserRetrieveUpdateDestroySerializer(ModelSerializer):
 
     class Meta:
         model = User
         fields = '__all__'
 
 
-class LoginSerializer(serializers.Serializer):
+class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
 
@@ -45,10 +34,13 @@ class LoginSerializer(serializers.Serializer):
         fields = "__all__"
 
 
-class UserListSerializer(ModelSerializer):
+class UserUpdateSerializer(ModelSerializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        exclude = ("password", )
+        fields = ["id", "username", "first_name", "last_name", "email", "old_password", "new_password"]
 
 
 class UserSerializer(ModelSerializer):

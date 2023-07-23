@@ -1,19 +1,19 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from core.models import User
 from core.permissions import IsOwner, IsStaff
-from core.serializers import UserSerializer, UserListSerializer, \
-    UserCreateSerializer, UserUpdateSerializer, LoginSerializer
+from core.serializers import UserSerializer, UserCreateSerializer, UserLoginSerializer, \
+    UserRetrieveUpdateDestroySerializer, UserUpdateSerializer
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404, RetrieveAPIView, UpdateAPIView, \
-    DestroyAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+    DestroyAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -40,33 +40,12 @@ class UserCreateView(CreateAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-
-class UserListView(ListAPIView):
+class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRetrieveUpdateDestroySerializer
 
     def get(self, request, *args, **kwargs):
-        user = User.objects.get(username=request.data['username'])
-
-        return JsonResponse({
-            "username": user.username,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-            "is_staff": user.is_staff,
-            "is_active": user.is_active,
-            "date_joined": user.date_joined,
-            "last_login": user.last_login,
-            "role": user.role
-        })
-
-
-class UserRetrieveUpdateView(RetrieveUpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserUpdateSerializer
-
-    def get(self, request, *args, **kwargs):
-        user = User.objects.get(username=request.data['username'])
+        user = get_user(request)
 
         return JsonResponse({
             "id": user.id,
@@ -77,7 +56,7 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
         })
 
     def put(self, request, *args, **kwargs):
-        user = User.objects.get(username=request.data['username'])
+        user = get_user(request)
 
         user.username = request.data["username"]
         user.first_name = request.data["first_name"]
@@ -95,23 +74,17 @@ class UserRetrieveUpdateView(RetrieveUpdateAPIView):
         })
 
     def patch(self, request, *args, **kwargs):
-        user = User.objects.get(username=request.data['username'])
+        user = get_user(request)
         pass
 
+    def delete(self, request, *args, **kwargs):
+        logout(request)
 
-class UserDeleteView(DestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class Logout(APIView):
-    def post(self, request):
-        request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
 
 
-class LoginView(GenericAPIView):
-    serializer_class = LoginSerializer
+class UserLoginView(GenericAPIView):
+    serializer_class = UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -123,6 +96,27 @@ class LoginView(GenericAPIView):
             login(request, user)
             return Response(status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+
+class UserUpdateView(UpdateAPIView):
+    serializer_class = UserUpdateSerializer
+
+    def patch(self, request, *args, **kwargs):
+        user = get_user(request)
+
+        old_password = request.data['old_password']
+        new_password = request.data['new_password']
+
+        check_password = user.check_password(old_password)
+
+        if check_password is not True:
+            return Response('Неправильный пароль', status=status.HTTP_404_NOT_FOUND)
+
+        validate_password(new_password)
+
+        user.set_password(request.data['new_password'])
+        user.save()
+
+        return Response(status=status.HTTP_200_OK)
 
