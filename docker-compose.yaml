@@ -25,7 +25,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: python manage.py makemigrations && python manage.py migrate
+    command: python manage.py migrate
 
   postgres:
     image: postgres:latest
@@ -49,3 +49,5 @@ services:
       api:
         condition: service_started
     restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
