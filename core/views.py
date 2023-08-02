@@ -1,22 +1,14 @@
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import ValidationError
 
 from core.models import User
-from core.permissions import IsOwner, IsStaff
-from core.serializers import UserSerializer, UserCreateSerializer, UserLoginSerializer, \
+from core.serializers import UserCreateSerializer, UserLoginSerializer, \
     UserRetrieveUpdateDestroySerializer, UserUpdateSerializer
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, get_object_or_404, RetrieveAPIView, UpdateAPIView, \
-    DestroyAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
 
 
 class UserCreateView(CreateAPIView):
@@ -37,7 +29,7 @@ class UserCreateView(CreateAPIView):
         user.set_password(password)
         user.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(data=user, status=status.HTTP_200_OK)
 
 
 class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
