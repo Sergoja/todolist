@@ -5,14 +5,14 @@ from goals.models import GoalCategory, Goal, GoalComment
 
 @admin.register(GoalCategory)
 class GoalCategoryAdmin(admin.ModelAdmin):
-    list_display = ("title", "user", "created", "updated")
-    search_fields = ("title", "user")
+    list_display = ("tittle", "user", "created", "updated")
+    search_fields = ("tittle", "user")
 
 
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):
-    list_display = ("title", "user", "category")
-    search_fields = ("title", "user", "description")
+    list_display = ("tittle", "user", "category")
+    search_fields = ("tittle", "user", "description")
 
 
 @admin.register(GoalComment)

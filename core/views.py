@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.password_validation import validate_password
+from django.db import IntegrityError
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
 
@@ -27,9 +28,16 @@ class UserCreateView(CreateAPIView):
             raise ValidationError({password: "Пароль не совпадает"})
 
         user.set_password(password)
-        user.save()
+        user.last_name = self.request.data['last_name']
+        user.first_name = self.request.data['first_name']
+        user.email = self.request.data['email']
+        
+        try:
+            user.save()
+        except Exception:
+            return Response("Такой пользователь уже существует", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data=user, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):

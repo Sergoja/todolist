@@ -76,14 +76,14 @@ class GoalCategory(DatesModelMixin):
         verbose_name_plural = "Категории"
 
     board = models.ForeignKey(
-        Board, verbose_name="Доска", on_delete=models.PROTECT, related_name="categories"
+        Board, verbose_name="Доска", on_delete=models.PROTECT, related_name="categories", null=True
     )
-    title = models.CharField(verbose_name="Название", max_length=255)
+    tittle = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
 
     def __str__(self):
-        return self.title
+        return self.tittle
 
 
 class Goal(DatesModelMixin):
@@ -91,7 +91,7 @@ class Goal(DatesModelMixin):
         verbose_name = "Цель"
         verbose_name_plural = "Цели"
 
-    title = models.CharField(max_length=50)
+    tittle = models.CharField(max_length=50)
     description = models.TextField(max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     due_date = models.DateTimeField(null=True, blank=True)
@@ -104,7 +104,7 @@ class Goal(DatesModelMixin):
     )
 
     def __str__(self):
-        return self.title
+        return self.tittle
 
 
 class GoalComment(DatesModelMixin):

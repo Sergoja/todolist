@@ -1,39 +1,41 @@
 from django.db import transaction
-from rest_framework import permissions, filters
+from rest_framework.response import Response
+from rest_framework import permissions, filters, status
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 
+from core.models import User
 from goals.models import GoalCategory, Goal
 from goals.permission import GoalCategoryPermission
 from goals.serializers import GoalCategorySerializer, GoalCategoryWithUserSerializer
 
 
 class GoalCategoryCreateView(CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    model = GoalCategory
     serializer_class = GoalCategorySerializer
 
 
+
 class GoalCategoryListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
     serializer_class = GoalCategoryWithUserSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
     ]
-    ordering_fields = ["title", "created"]
-    ordering = ["title"]
-    search_fields = ["title"]
+    ordering_fields = ["tittle", "created"]
+    ordering = ["tittle"]
+    search_fields = ["tittle"]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(
-            user=self.request.user, is_deleted=False
+            user_id=self.request.user.id,
+            is_deleted=False
         )
 
 
 class GoalCategoryDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategoryWithUserSerializer
-    permission_classes = [GoalCategoryPermission]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(user=self.request.user, is_deleted=False)

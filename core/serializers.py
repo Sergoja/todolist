@@ -11,7 +11,12 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class UserCreateSerializer(ModelSerializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(max_length=128)
     password_repeat = serializers.CharField(max_length=128, required=True)
+    last_name = serializers.CharField(max_length=150)
+    first_name = serializers.CharField(max_length=150)
+    email = serializers.CharField()
 
     class Meta:
         model = User

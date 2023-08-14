@@ -5,7 +5,3 @@ venv
 Lib
 Scripts
 pyvenv.cfg
-goals
-core
-todolist
-templates

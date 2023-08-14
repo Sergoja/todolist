@@ -10,12 +10,10 @@ from goals.serializers import GoalSerializer, GoalWithUserSerializer
 
 
 class GoalCreateView(CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
     serializer_class = GoalSerializer
 
 
 class GoalListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
     serializer_class = GoalWithUserSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -30,14 +28,13 @@ class GoalListView(ListAPIView):
 
     def get_queryset(self):
         return Goal.objects.filter(
-            user=self.request.user, is_deleted=False,
+            category__board__participants__user_id=self.request.user.id,
             category__is_deleted=False
         ).exclude(status=Goal.status.archived)
 
 
 class GoalDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = GoalWithUserSerializer
-    permission_classes = [GoalPermission]
 
     def get_queryset(self):
         return Goal.objects.filter(
