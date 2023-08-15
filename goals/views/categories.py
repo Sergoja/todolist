@@ -23,9 +23,9 @@ class GoalCategoryListView(ListAPIView):
         filters.OrderingFilter,
         filters.SearchFilter,
     ]
-    ordering_fields = ["tittle", "created"]
-    ordering = ["tittle"]
-    search_fields = ["tittle"]
+    ordering_fields = ["title", "created"]
+    ordering = ["title"]
+    search_fields = ["title"]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(
@@ -44,4 +44,4 @@ class GoalCategoryDetailView(RetrieveUpdateDestroyAPIView):
         with transaction.atomic():
             instance.is_deleted = True
             instance.save()
-            instance.goal_set.update(status=Goal.status.archived)
+            instance.goal_set.update(status=Goal.Status.archived)

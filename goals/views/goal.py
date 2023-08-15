@@ -6,15 +6,15 @@ from rest_framework.pagination import LimitOffsetPagination
 from goals.filters import GoalDateFilter
 from goals.models import Goal
 from goals.permission import GoalPermission
-from goals.serializers import GoalSerializer, GoalWithUserSerializer
+from goals.serializers import GoalSerializer, GoalCreateSerializer
 
 
 class GoalCreateView(CreateAPIView):
-    serializer_class = GoalSerializer
+    serializer_class = GoalCreateSerializer
 
 
 class GoalListView(ListAPIView):
-    serializer_class = GoalWithUserSerializer
+    serializer_class = GoalSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
         DjangoFilterBackend,
@@ -30,19 +30,18 @@ class GoalListView(ListAPIView):
         return Goal.objects.filter(
             category__board__participants__user_id=self.request.user.id,
             category__is_deleted=False
-        ).exclude(status=Goal.status.archived)
+        ).exclude(status=Goal.Status.archived)
 
 
 class GoalDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = GoalWithUserSerializer
+    serializer_class = GoalSerializer
 
     def get_queryset(self):
         return Goal.objects.filter(
-            user=self.request.user, is_deleted=False,
-            category__is_deleted=False
-        ).exclude(status=Goal.status.archived)
+            category__board__participants__user_id=self.request.user.id, category__is_deleted=False
+        ).exclude(status=Goal.Status.archived)
 
     def perform_destroy(self, instance):
-        instance.status = Goal.status.archived
-        instance.save()
+        instance.status = Goal.Status.archived
+        instance.save(update_fields=('status',))
 
