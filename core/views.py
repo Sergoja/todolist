@@ -2,11 +2,12 @@ from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.password_validation import validate_password
 from django.db import IntegrityError
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from rest_framework.exceptions import ValidationError
 
 from core.models import User
 from core.serializers import UserCreateSerializer, UserLoginSerializer, \
-    UserRetrieveUpdateDestroySerializer, UserUpdateSerializer
+    UserRetrieveUpdateDestroySerializer, UserUpdateSerializer, UserSerializer
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response

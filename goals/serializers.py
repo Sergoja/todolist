@@ -6,20 +6,36 @@ from goals.models import GoalCategory, GoalComment, Goal, Board, BoardParticipan
 
 
 class GoalCategorySerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = GoalCategory
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user', 'board')
+
+    def validated_board(self, value: Board):
+        if value.is_deleted:
+            raise serializers.ValidationError('Not allowed to delete category')
+        if not BoardParticipant.objects.filter(
+                board=value,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user.id
+        ).exists():
+            raise serializers.ValidationError('You must be owner or writer')
+        return value
+
+
+class GoalCategoryCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GoalCategory
-        fields = "__all__"
-        read_only_fields = ("id", "created", "updated", "user")
-
-
-class GoalCategoryWithUserSerializer(GoalCategorySerializer):
-    user = UserSerializer(read_only=True)
+        read_only_fields = ('id', 'created', 'updated', 'user', 'is_deleted')
+        fields = '__all__'
 
 
 class GoalSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Goal

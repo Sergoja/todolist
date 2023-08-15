@@ -18,18 +18,7 @@ class DatesModelMixin(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Status(models.IntegerChoices):
-    to_do = 1, "К выполнению"
-    in_progress = 2, "В процессе"
-    done = 3, "Выполнено"
-    archived = 4, "Архив"
 
-
-class Priority(models.IntegerChoices):
-    low = 1, "Низкий"
-    medium = 2, "Средний"
-    high = 3, "Высокий"
-    critical = 4, "Критический"
 
 
 class Board(DatesModelMixin):
@@ -76,7 +65,7 @@ class GoalCategory(DatesModelMixin):
         verbose_name_plural = "Категории"
 
     board = models.ForeignKey(
-        Board, verbose_name="Доска", on_delete=models.PROTECT, related_name="categories", null=True
+        Board, verbose_name="Доска", on_delete=models.PROTECT, related_name="categories"
     )
     tittle = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
@@ -90,6 +79,18 @@ class Goal(DatesModelMixin):
     class Meta:
         verbose_name = "Цель"
         verbose_name_plural = "Цели"
+
+    class Status(models.IntegerChoices):
+        to_do = 1, "К выполнению"
+        in_progress = 2, "В процессе"
+        done = 3, "Выполнено"
+        archived = 4, "Архив"
+
+    class Priority(models.IntegerChoices):
+        low = 1, "Низкий"
+        medium = 2, "Средний"
+        high = 3, "Высокий"
+        critical = 4, "Критический"
 
     tittle = models.CharField(max_length=50)
     description = models.TextField(max_length=255)
