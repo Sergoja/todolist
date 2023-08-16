@@ -7,12 +7,11 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from pydantic import BaseModel
 
-from todolist.bot.models import TgUser
-from todolist.bot.tg.client import TgClient
-from todolist.bot.tg.fsm.memory_storage import MemoryStorage
-
-from todolist.bot.tg.schemas import Message
-from todolist.goals.models import Goal, GoalCategory, BoardParticipant
+from bot.models import TgUser
+from bot.tg.client import TgClient
+from bot.tg.dc import Message
+from bot.tg.fsm.memory_storage import MemoryStorage
+from goals.models import Goal, GoalCategory, BoardParticipant
 
 logger = logging.getLogger(__name__)
 
