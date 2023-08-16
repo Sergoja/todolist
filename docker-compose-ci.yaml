@@ -30,10 +30,20 @@ services:
       retries: 5
 
   front:
-    image: sermalenk/skypro-front:lesson-36
+    image: sermalenk/skypro-front:lesson-38
     ports:
       - "80:80"
     depends_on:
       api:
         condition: service_started
     restart: always
+
+  bot:
+    image: sergoja/todolist:latest
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    command: python3 manage.py runbot
