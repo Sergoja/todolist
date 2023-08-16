@@ -1,101 +1,49 @@
-from dataclasses import dataclass, field
-from typing import List, Optional
-
-import marshmallow
-import marshmallow_dataclass
+from typing import Optional
+from pydantic import BaseModel, Field
 
 
-@dataclass
-class Chat:
+class MessageFrom(BaseModel):
+    """Модель пользователя бота"""
     id: int
     first_name: str
-    last_name: Optional[str]
-    username: str
-    type: str
-
-    class Meta:
-        unknown = marshmallow.EXCLUDE
+    last_name: str | None = None
+    username: Optional[str] | None = None
 
 
-ChatSchema = marshmallow_dataclass.class_schema(Chat)
-
-
-@dataclass
-class Entities:
-    offset: int
-    length: int
-    type: str
-
-    class Meta:
-        unknown = marshmallow.EXCLUDE
-
-
-EntitiesSchema = marshmallow_dataclass.class_schema(Entities)
-
-
-@dataclass
-class FromMessage:
+class Chat(BaseModel):
+    """Модель чата бота"""
     id: int
-    is_bot: bool
-    first_name: str
-    last_name: Optional[str]
-    username: str
-    language_code: Optional[str]
-
-    class Meta:
-        unknown = marshmallow.EXCLUDE
+    type: str
+    first_name: str | None = None
+    last_name: str | None = None
+    username: str | None = None
+    title: str | None = None
 
 
-FromMessageSchema = marshmallow_dataclass.class_schema(FromMessage)
-
-
-@dataclass
-class Message:
+class Message(BaseModel):
+    """Модель сообщения бота"""
     message_id: int
-    message_from: FromMessage = field(metadata={"data_key": "from"})
+    from_: MessageFrom = Field(..., alias='from')
     chat: Chat
-    date: int
-    text: str
-    entities: List[Entities] = None
+    text: str | None = None
 
-    class Meta:
-        unknown = marshmallow.EXCLUDE
+    class Config:
+        allow_population_by_field_name = True
 
 
-MessageSchema = marshmallow_dataclass.class_schema(Message)
-
-
-@dataclass
-class UpdateObj:
+class UpdateObj(BaseModel):
+    """Модель бота полученных сообщений"""
     update_id: int
     message: Message
 
-    class Meta:
-        unknown = marshmallow.EXCLUDE
 
-
-UpdateObjSchema = marshmallow_dataclass.class_schema(UpdateObj)
-
-
-@dataclass
-class GetUpdatesResponse:
+class GetUpdatesResponse(BaseModel):
+    """Модель бота для получения сообщений от пользователя"""
     ok: bool
-    result: List[UpdateObj]
-
-    class Meta:
-        unknown = marshmallow.EXCLUDE
+    result: list[UpdateObj] = []
 
 
-GetUpdatesResponseSchema = marshmallow_dataclass.class_schema(GetUpdatesResponse)
-
-
-@dataclass
-class SendMessageResponse:
+class SendMessageResponse(BaseModel):
+    """Модель бота для отправки сообщения"""
     ok: bool
     result: Message
-
-    class Meta:
-        unknown = marshmallow.EXCLUDE
-
-
-SendMessageResponseSchema = marshmallow_dataclass.class_schema(SendMessageResponse)

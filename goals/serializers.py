@@ -70,26 +70,41 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = GoalComment
         fields = "__all__"
-        read_only_fields = ("id", "created", "updated", "user")
+        read_only_fields = ("id", "created", "updated", "user", "goal")
 
     def validate_goal(self, value):
-        if value.status == Goal.status.archived:
+        if value.status == Goal.Status.archived:
             raise serializers.ValidationError("not allowed in deleted category")
 
-        if value.user != self.context["request"].user:
+        if self.context['request'].user.id != value.user.id:
             raise serializers.ValidationError("not owner of category")
 
         return value
 
 
-class GoalCommentWithUserSerializer(GoalCommentSerializer):
-    user = UserSerializer(read_only=True)
-    goal = serializers.PrimaryKeyRelatedField(read_only=True)
+class GoalCommentCreateSerializer(GoalCommentSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate_goal(self, value: Goal) -> Goal:
+        if value.status == Goal.Status.archived:
+            raise ValidationError('Goal not found')
+        if not BoardParticipant.objects.filter(
+                board_id=value.category.board_id,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user.id
+        ).exists():
+            raise PermissionDenied
+        return value
+
+    class Meta:
+        model = GoalComment
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user')
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
@@ -107,6 +122,8 @@ class BoardParticipantSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         slug_field="username", queryset=User.objects.all()
     )
+    # created = serializers.DateTimeField()
+    # updated = serializers.DateTimeField()
 
     class Meta:
         model = BoardParticipant
@@ -129,7 +146,9 @@ class BoardSerializer(serializers.ModelSerializer):
                 BoardParticipant(
                     user=participant['user'],
                     role=participant['role'],
-                    board=instance
+                    board=instance,
+                    # created=participant['created'],
+                    # updated=participant['updated']
                 )
                 for participant in validated_data.get('participants', [])
             ])

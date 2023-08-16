@@ -1,32 +1,37 @@
-import requests
+import logging
+from enum import Enum
 
-from bot.tg.dc import GetUpdatesResponse, GetUpdatesResponseSchema, SendMessageResponse, SendMessageResponseSchema
+import requests
+from django.conf import settings
+
+from bot.tg.dc import GetUpdatesResponse, SendMessageResponse
+
+
+class Command(str, Enum):
+    GET_UPDATES = 'getUpdates'
+    SEND_MESSAGE = 'sendMessage'
 
 
 class TgClient:
-    def __init__(self, token):
-        self.token = token
+    def __init__(self, token: str | None = None):
+        self.token = token if token else settings.BOT_TOKEN
+        self.logger = logging.getLogger(__name__)
 
-    def get_url(self, method: str):
-        return f"https://api.telegram.org/bot{self.token}/{method}"
-
-    def get_data(self, method: str, **params):
-        data = requests.get(f"https://api.telegram.org/bot{self.token}/{method}", params=params)
-        return data.json()
+    def get_url(self, method: str) -> str:
+        return f'https://api.telegram.org/bot{self.token}/{method}'
 
     def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
-        data = self.get_data("getUpdates", offset=offset, timeout=timeout)
-        return GetUpdatesResponseSchema().load(data)
+        data = self._get(Command.GET_UPDATES, offset=offset, timeout=timeout)
+        return GetUpdatesResponse(**data)
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
-        data = self.get_data("sendMessage", chat_id=chat_id, text=text)
-        return SendMessageResponseSchema().load(data)
+        data = self._get(Command.SEND_MESSAGE, chat_id=chat_id, text=text)
+        return SendMessageResponse(**data)
 
-
-offset = 0
-tg_client = TgClient("6639076130:AAEbibrXbRh62knEhhooeRdoYvbYyVyCT2E")
-while True:
-    res = tg_client.get_updates(offset=offset)
-    for item in res.result:
-        offset = item.update_id + 1
-        print(item.message)
+    def _get(self, command: Command, **params) -> dict:
+        url = self.get_url(command)
+        response = requests.get(url, params=params)
+        if not response.ok:
+            print(response.json())
+            raise ValueError
+        return response.json()

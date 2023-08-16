@@ -6,17 +6,15 @@ from rest_framework.pagination import LimitOffsetPagination
 from goals.filters import GoalDateFilter
 from goals.models import Goal, GoalComment
 from goals.permission import GoalPermission, GoalCommentPermission
-from goals.serializers import GoalCommentSerializer, GoalCommentWithUserSerializer
+from goals.serializers import GoalCommentSerializer, GoalCommentCreateSerializer
 
 
 class GoalCommentCreateView(CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = GoalCommentSerializer
+    serializer_class = GoalCommentCreateSerializer
 
 
 class GoalCommentListView(ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = GoalCommentWithUserSerializer
+    serializer_class = GoalCommentSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
         DjangoFilterBackend,
@@ -27,13 +25,12 @@ class GoalCommentListView(ListAPIView):
 
     def get_queryset(self):
         return GoalComment.objects.filter(
-            user=self.request.user, is_deleted=False
+            goal__category__board__participants__user_id=self.request.user.id
         )
 
 
 class GoalCommentDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = GoalCommentWithUserSerializer
-    permission_classes = [GoalCommentPermission]
+    serializer_class = GoalCommentSerializer
 
     def get_queryset(self):
-        return GoalComment.objects.select_related('user')
+        return GoalComment.objects.select_related('user').filter(user_id=self.request.user.id)
