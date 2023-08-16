@@ -58,7 +58,7 @@ class Command(BaseCommand):
         if resp_goals:
             self.tg_client.send_message(msg.chat.id, '\n'.join(resp_goals))
         else:
-            self.tg_client.send_message(msg.chat.id, '[You have no goals]')
+            self.tg_client.send_message(msg.chat.id, '[You have no goals_tests]')
 
     def handle_goal_categories_list(self, msg: Message, tg_user: TgUser):
         resp_categories: list[str] = [
@@ -104,7 +104,7 @@ class Command(BaseCommand):
         self.storage.reset(tg_user.chat_id)
 
     def handle_verified_user(self, msg: Message, tg_user: TgUser):
-        if msg.text == '/goals':
+        if msg.text == '/goals_tests':
             self.handle_goals_list(msg, tg_user)
         elif msg.text == '/create':
             self.handle_goal_categories_list(msg=msg, tg_user=tg_user)

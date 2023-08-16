@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(verbose_name='Дата создания')),
                 ('updated', models.DateTimeField(verbose_name='Дата последнего обновления')),
                 ('text', models.CharField(max_length=255)),
-                ('goal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='goals.goal')),
+                ('goal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='goals_tests.goal')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(verbose_name='Дата последнего обновления')),
                 ('title', models.CharField(max_length=255, verbose_name='Название')),
                 ('is_deleted', models.BooleanField(default=False, verbose_name='Удалена')),
-                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='categories', to='goals.board', verbose_name='Доска')),
+                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='categories', to='goals_tests.board', verbose_name='Доска')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL, verbose_name='Автор')),
             ],
             options={
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='goal',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='goals.goalcategory', verbose_name='Категория'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='goals_tests.goalcategory', verbose_name='Категория'),
         ),
         migrations.AddField(
             model_name='goal',
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(verbose_name='Дата создания')),
                 ('updated', models.DateTimeField(verbose_name='Дата последнего обновления')),
                 ('role', models.PositiveSmallIntegerField(choices=[(1, 'Владелец'), (2, 'Редактор'), (3, 'Читатель')], default=1, verbose_name='Роль')),
-                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants', to='goals.board', verbose_name='Доска')),
+                ('board', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants', to='goals_tests.board', verbose_name='Доска')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='participants', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
