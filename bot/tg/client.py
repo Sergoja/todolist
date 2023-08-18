@@ -1,4 +1,3 @@
-import logging
 from enum import Enum
 
 import requests
@@ -15,7 +14,6 @@ class Command(str, Enum):
 class TgClient:
     def __init__(self, token: str | None = None):
         self.token = token if token else settings.BOT_TOKEN
-        self.logger = logging.getLogger(__name__)
 
     def get_url(self, method: str) -> str:
         return f'https://api.telegram.org/bot{self.token}/{method}'
@@ -31,7 +29,7 @@ class TgClient:
     def _get(self, command: Command, **params) -> dict:
         url = self.get_url(command)
         response = requests.get(url, params=params)
-        # if not response.ok:
-        #     print(response.json())
-        #     raise ValueError
+        if not response.ok:
+            print(response.json())
+            raise ValueError
         return response.json()
