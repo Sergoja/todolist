@@ -1,7 +1,6 @@
 .gitignore
 README.md
 venv
-.env
 Lib
 Scripts
 pyvenv.cfg
