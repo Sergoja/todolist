@@ -1,7 +1,5 @@
-from core import views
 from core.views import UserCreateView, UserLoginView, UserRetrieveUpdateDestroyView, UserUpdateView
 from django.urls import path
-from rest_framework import routers
 
 urlpatterns = [
     path('profile', UserRetrieveUpdateDestroyView.as_view()),

@@ -1,12 +1,9 @@
 from django.db import transaction
-from rest_framework.response import Response
-from rest_framework import permissions, filters, status
+from rest_framework import filters
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 
-from core.models import User
 from goals.models import GoalCategory, Goal
-from goals.permission import GoalCategoryPermission
 from goals.serializers import GoalCategorySerializer, GoalCategoryCreateSerializer
 
 

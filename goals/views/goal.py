@@ -1,11 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, filters
+from rest_framework import filters
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import LimitOffsetPagination
 
 from goals.filters import GoalDateFilter
 from goals.models import Goal
-from goals.permission import GoalPermission
 from goals.serializers import GoalSerializer, GoalCreateSerializer
 
 

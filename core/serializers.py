@@ -1,13 +1,6 @@
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-
 from core.models import User
-from rest_framework import serializers, status
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from django.contrib.auth.password_validation import validate_password
 
 
 class UserCreateSerializer(ModelSerializer):

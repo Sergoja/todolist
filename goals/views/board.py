@@ -1,10 +1,9 @@
 from django.db import transaction
-from rest_framework import permissions, filters
+from rest_framework import filters
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
 
 from goals.models import Board, Goal, BoardParticipant
-from goals.permission import BoardPermissions
 from goals.serializers import BoardSerializer, BoardCreateSerializer
 
 

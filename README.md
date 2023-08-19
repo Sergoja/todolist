@@ -4,6 +4,6 @@ python3.11, Django-4.2.2, Postgres
 
 Для запуска:\
 venv\Scripts\activate.ps1 \
-pip install -r requirements.txt
+pip install -r requirements.txt \
+python manage.py runserver
 
-[//]: # (как запустить &#40;установить зависимости, заполнить .env + какими значениями, накатить миграции, запустить проект&#41;)
