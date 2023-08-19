@@ -1,9 +1,9 @@
 from enum import Enum
 
 import requests
-from django.conf import settings
 
 from bot.tg.dc import GetUpdatesResponse, SendMessageResponse
+from todolist import settings
 
 
 class Command(str, Enum):
@@ -27,7 +27,7 @@ class TgClient:
         return SendMessageResponse(**data)
 
     def _get(self, command: Command, **params) -> dict:
-        url = self.get_url(command)
+        url = self.get_url(command.value)
         response = requests.get(url, params=params)
         if not response.ok:
             print(response.json())
