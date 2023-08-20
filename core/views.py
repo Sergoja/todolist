@@ -1,42 +1,17 @@
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.password_validation import validate_password
 from django.http import JsonResponse
-from rest_framework.exceptions import ValidationError
 
 from core.models import User
 from core.serializers import UserCreateSerializer, UserLoginSerializer, \
-    UserRetrieveUpdateDestroySerializer, UserUpdateSerializer
+    UserUpdateSerializer, UserRetrieveUpdateDestroySerializer
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 
 
 class UserCreateView(CreateAPIView):
-    model = User
     serializer_class = UserCreateSerializer
-
-    def post(self, *args, **kwargs):
-        user = User(username=self.request.data['username'])
-
-        password = self.request.data['password']
-        password_repeat = self.request.data['password_repeat']
-
-        validate_password(password)
-
-        if password != password_repeat:
-            raise ValidationError({password: "Пароль не совпадает"})
-
-        user.set_password(password)
-        user.last_name = self.request.data['last_name']
-        user.first_name = self.request.data['first_name']
-        user.email = self.request.data['email']
-        
-        try:
-            user.save()
-        except Exception:
-            return Response("Такой пользователь уже существует", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(status=status.HTTP_200_OK)
 
 
 class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
